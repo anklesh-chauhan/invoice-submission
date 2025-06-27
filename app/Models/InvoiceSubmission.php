@@ -41,4 +41,23 @@ class InvoiceSubmission extends Model
     {
         return $this->belongsTo(User::class, 'sent_to_user_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Prevent update if status is accepted
+        static::updating(function ($invoice) {
+            if ($invoice->getOriginal('status') === 'accepted') {
+                throw new \Exception("Approved invoice cannot be modified.");
+            }
+        });
+
+        // Prevent delete if status is accepted
+        static::deleting(function ($invoice) {
+            if ($invoice->status === 'accepted') {
+                throw new \Exception("Approved invoice cannot be deleted.");
+            }
+        });
+    }
 }
