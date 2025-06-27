@@ -18,6 +18,8 @@ use App\Mail\InvoiceStatusApprovalMail;
 use Illuminate\Support\Facades\URL;
 use App\Mail\BulkInvoiceStatusApprovalMail;
 use Illuminate\Support\Collection;
+use App\Models\BulkInvoiceApproval;
+use Illuminate\Support\Str;
 
 class InvoiceSubmissionResource extends Resource
 {
@@ -120,8 +122,15 @@ class InvoiceSubmissionResource extends Resource
                         $user = $records->first()->sentToUser;
                         $ids = $records->pluck('id')->toArray();
 
-                        $approveUrl = URL::signedRoute('invoices.bulk-approve', ['ids' => implode(',', $ids)]);
-                        $rejectUrl = URL::signedRoute('invoices.bulk-reject', ['ids' => implode(',', $ids)]);
+                        $token = Str::uuid()->toString();
+
+                        BulkInvoiceApproval::create([
+                            'token' => $token,
+                            'invoice_ids' => $ids,
+                        ]);
+
+                        $approveUrl = URL::signedRoute('invoices.bulk-approve', ['token' => $token]);
+                        $rejectUrl = URL::signedRoute('invoices.bulk-reject', ['token' => $token]);
 
                         Mail::to($user->email)->send(
                             new BulkInvoiceStatusApprovalMail($records, $approveUrl, $rejectUrl)

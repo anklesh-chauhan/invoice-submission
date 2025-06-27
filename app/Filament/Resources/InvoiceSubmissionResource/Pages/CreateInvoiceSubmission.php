@@ -13,14 +13,14 @@ class CreateInvoiceSubmission extends CreateRecord
 {
     protected static string $resource = InvoiceSubmissionResource::class;
 
-    protected function afterCreate(): void
-    {
-        $invoice = $this->record;
+    // protected function afterCreate(): void
+    // {
+    //     $invoice = $this->record;
 
-        $approveUrl = URL::signedRoute('invoices.approve', ['invoice' => $invoice->id]);
-        $rejectUrl = URL::signedRoute('invoices.reject', ['invoice' => $invoice->id]);
+    //     $approveUrl = URL::signedRoute('invoices.approve', ['invoice' => $invoice->id]);
+    //     $rejectUrl = URL::signedRoute('invoices.reject', ['invoice' => $invoice->id]);
 
-        Mail::to($invoice->sentToUser->email)
-            ->send(new InvoiceStatusApprovalMail($invoice, $approveUrl, $rejectUrl));
-    }
+    //     Mail::to($invoice->sentToUser->email)
+    //         ->send(new InvoiceStatusApprovalMail($invoice, $approveUrl, $rejectUrl));
+    // }
 }
