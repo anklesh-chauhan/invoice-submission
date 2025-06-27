@@ -42,10 +42,8 @@ class InvoiceSubmission extends Model
         return $this->belongsTo(User::class, 'sent_to_user_id');
     }
 
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
-
         // Prevent update if status is accepted
         static::updating(function ($invoice) {
             if ($invoice->getOriginal('status') === 'accepted') {
