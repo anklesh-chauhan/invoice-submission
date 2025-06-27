@@ -16,6 +16,8 @@ use App\Enums\InvoiceStatus;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\InvoiceStatusApprovalMail;
 use Illuminate\Support\Facades\URL;
+use App\Mail\BulkInvoiceStatusApprovalMail;
+use Illuminate\Support\Collection;
 
 class InvoiceSubmissionResource extends Resource
 {
@@ -111,9 +113,25 @@ class InvoiceSubmissionResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\BulkAction::make('sendForApproval')
+                    ->label('Send for Approval')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->action(function (Collection $records) {
+                        $user = $records->first()->sentToUser;
+
+                        $invoiceData = $records->map(function ($invoice) {
+                            return [
+                                'invoice' => $invoice,
+                                'approveUrl' => URL::signedRoute('invoices.approve', ['invoice' => $invoice->id]),
+                                'rejectUrl' => URL::signedRoute('invoices.reject', ['invoice' => $invoice->id]),
+                            ];
+                        });
+
+                        Mail::to($user->email)->send(
+                            new BulkInvoiceStatusApprovalMail($invoiceData)
+                        );
+                    })
+                    ->deselectRecordsAfterCompletion(),
             ]);
     }
 
