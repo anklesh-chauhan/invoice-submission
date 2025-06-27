@@ -113,7 +113,8 @@ class InvoiceSubmissionResource extends Resource
                         collect(InvoiceStatus::cases())
                             ->mapWithKeys(fn ($case) => [$case->value => $case->label()])
                             ->toArray()
-                    ),
+                    )
+                    ->default(InvoiceStatus::Pending->value),
 
                 // Filter by Sent User
                 Tables\Filters\SelectFilter::make('sent_to_user_id')
@@ -143,10 +144,10 @@ class InvoiceSubmissionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->disabled(fn ($record) => $record->status === InvoiceStatus::Accepted->value),
+                    ->disabled(fn ($record) => $record->status === InvoiceStatus::Accepted),
 
                 Tables\Actions\DeleteAction::make()
-                    ->disabled(fn ($record) => $record->status === InvoiceStatus::Accepted->value),
+                    ->disabled(fn ($record) => $record->status === InvoiceStatus::Accepted),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('sendForApproval')
