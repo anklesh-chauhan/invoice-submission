@@ -1,25 +1,21 @@
 @component('mail::message')
 # Invoice Approval Request
 
-You have received multiple invoices for approval.
+You have received the following invoices for approval:
 
-@foreach ($invoices as $item)
+@foreach ($invoices as $invoice)
+- **Invoice #{{ $invoice->id }}** — ₹{{ number_format($invoice->amount, 2) }} ({{ $invoice->created_at->format('d M Y') }})
+@endforeach
+
 ---
 
-### Invoice #{{ $item['invoice']->id }}
-
-Amount: ₹{{ number_format($item['invoice']->amount, 2) }}
-Date: {{ $item['invoice']->created_at->format('d M Y') }}
-
-@component('mail::button', ['url' => $item['approveUrl']])
-Approve
+@component('mail::button', ['url' => $approveUrl])
+✅ Approve All
 @endcomponent
 
-@component('mail::button', ['url' => $item['rejectUrl'], 'color' => 'red'])
-Reject
+@component('mail::button', ['url' => $rejectUrl, 'color' => 'red'])
+❌ Reject All
 @endcomponent
-
-@endforeach
 
 Thanks,
 {{ config('app.name') }}

@@ -10,19 +10,25 @@ class BulkInvoiceStatusApprovalMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $invoices; // array of [invoice, approveUrl, rejectUrl]
+    public $invoices;
+    public $approveUrl;
+    public $rejectUrl;
 
-    public function __construct($invoices)
+    public function __construct($invoices, $approveUrl, $rejectUrl)
     {
         $this->invoices = $invoices;
+        $this->approveUrl = $approveUrl;
+        $this->rejectUrl = $rejectUrl;
     }
 
     public function build()
     {
-        return $this->subject('Multiple Invoice Approvals Required')
+        return $this->subject('Approve All Invoices')
                     ->markdown('emails.bulk-invoice-status-approval')
                     ->with([
                         'invoices' => $this->invoices,
+                        'approveUrl' => $this->approveUrl,
+                        'rejectUrl' => $this->rejectUrl,
                     ]);
     }
 }

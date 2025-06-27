@@ -118,17 +118,13 @@ class InvoiceSubmissionResource extends Resource
                     ->icon('heroicon-o-paper-airplane')
                     ->action(function (Collection $records) {
                         $user = $records->first()->sentToUser;
+                        $ids = $records->pluck('id')->toArray();
 
-                        $invoiceData = $records->map(function ($invoice) {
-                            return [
-                                'invoice' => $invoice,
-                                'approveUrl' => URL::signedRoute('invoices.approve', ['invoice' => $invoice->id]),
-                                'rejectUrl' => URL::signedRoute('invoices.reject', ['invoice' => $invoice->id]),
-                            ];
-                        });
+                        $approveUrl = URL::signedRoute('invoices.bulk-approve', ['ids' => implode(',', $ids)]);
+                        $rejectUrl = URL::signedRoute('invoices.bulk-reject', ['ids' => implode(',', $ids)]);
 
                         Mail::to($user->email)->send(
-                            new BulkInvoiceStatusApprovalMail($invoiceData)
+                            new BulkInvoiceStatusApprovalMail($records, $approveUrl, $rejectUrl)
                         );
                     })
                     ->deselectRecordsAfterCompletion(),

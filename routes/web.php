@@ -19,4 +19,22 @@ Route::middleware(['web'])->group(function () {
         $invoice->update(['status' => 'rejected']);
         return view('invoices.approval-response', ['status' => 'rejected']);
     })->name('invoices.reject');
+
+    Route::get('/invoices/bulk-approve', function () {
+        abort_unless(request()->hasValidSignature(), 403);
+
+        $ids = explode(',', request('ids'));
+        InvoiceSubmission::whereIn('id', $ids)->update(['status' => 'accepted']);
+
+        return view('invoices.approval-response', ['status' => 'accepted']);
+    })->name('invoices.bulk-approve');
+
+    Route::get('/invoices/bulk-reject', function () {
+        abort_unless(request()->hasValidSignature(), 403);
+
+        $ids = explode(',', request('ids'));
+        InvoiceSubmission::whereIn('id', $ids)->update(['status' => 'rejected']);
+
+        return view('invoices.approval-response', ['status' => 'rejected']);
+    })->name('invoices.bulk-reject');
 });
