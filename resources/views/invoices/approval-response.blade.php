@@ -10,8 +10,8 @@
     <div class="bg-white shadow-xl rounded-2xl p-10 max-w-md text-center">
         @if ($status === 'accepted')
 
-            <h1 class="text-2xl font-semibold text-green-600 mb-4">Invoice Approved</h1>
-            <p class="text-gray-600">Thank you! The invoice has been approved successfully.</p>
+            <h1 class="text-2xl font-semibold text-green-600 mb-4">Invoice Accepted</h1>
+            <p class="text-gray-600">Thank you! The invoice has been accepted successfully.</p>
         @elseif ($status === 'rejected')
 
             <h1 class="text-2xl font-semibold text-red-600 mb-4">Invoice Rejected</h1>
