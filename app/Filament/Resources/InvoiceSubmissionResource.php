@@ -106,13 +106,47 @@ class InvoiceSubmissionResource extends Resource
 
             ])
             ->filters([
-                //
+                // Filter by Status
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(
+                        collect(InvoiceStatus::cases())
+                            ->mapWithKeys(fn ($case) => [$case->value => $case->label()])
+                            ->toArray()
+                    ),
+
+                // Filter by Sent User
+                Tables\Filters\SelectFilter::make('sent_to_user_id')
+                    ->label('Sent To User')
+                    ->relationship('sentToUser', 'name')
+                    ->searchable()
+                    ->preload(),
+
+                // Filter by Vendor
+                Tables\Filters\SelectFilter::make('vendor_id')
+                    ->label('Vendor')
+                    ->relationship('vendor', 'VendorName')
+                    ->searchable()
+                    ->preload(),
+
+                // Filter by Invoice Date Range
+                Tables\Filters\Filter::make('invoice_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('from')->label('From'),
+                        Forms\Components\DatePicker::make('until')->label('Until'),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query
+                            ->when($data['from'], fn ($q) => $q->whereDate('invoice_date', '>=', $data['from']))
+                            ->when($data['until'], fn ($q) => $q->whereDate('invoice_date', '<=', $data['until']));
+                    }),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->url(fn ($record) => InvoiceSubmissionResource::getUrl('view', ['record' => $record])),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->disabled(fn ($record) => $record->status === InvoiceStatus::Accepted->value),
+
+                Tables\Actions\DeleteAction::make()
+                    ->disabled(fn ($record) => $record->status === InvoiceStatus::Accepted->value),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('sendForApproval')
