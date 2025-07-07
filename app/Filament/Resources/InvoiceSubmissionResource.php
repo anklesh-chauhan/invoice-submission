@@ -88,12 +88,12 @@ class InvoiceSubmissionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->label('Submitted At'),
-                Tables\Columns\TextColumn::make('invoice_date')->date()->sortable(),
-                Tables\Columns\TextColumn::make('vendor.VendorName')->label('Vendor'),
-                Tables\Columns\TextColumn::make('invoice_number')->label('Invoice No.')->sortable(),
-                Tables\Columns\TextColumn::make('amount')->money('INR', true),
-                Tables\Columns\TextColumn::make('sentToUser.name')->label('Sent To'),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->format('D M Y')->sortable()->label('Submitted At')->searchable(),
+                Tables\Columns\TextColumn::make('invoice_date')->date()->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('vendor.VendorName')->label('Vendor')->searchable(),
+                Tables\Columns\TextColumn::make('invoice_number')->label('Invoice No.')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('amount')->money('INR', true)->searchable(),
+                Tables\Columns\TextColumn::make('sentToUser.name')->label('Sent To')->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()

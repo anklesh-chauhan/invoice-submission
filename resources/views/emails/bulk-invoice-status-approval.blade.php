@@ -4,7 +4,7 @@
 You have received the following invoices for approval:
 
 @foreach ($invoices as $invoice)
-- **Invoice #{{ $invoice->id }}** — ₹{{ number_format($invoice->amount, 2) }} ({{ $invoice->created_at->format('d M Y') }})
+- **Invoice #{{ $invoice->invoice_number}}** — ₹{{ number_format($invoice->amount, 2) }} ({{ $invoice->invoice_date->format('d M Y') }})
 @endforeach
 
 ---
