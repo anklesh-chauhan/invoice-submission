@@ -88,7 +88,7 @@ class InvoiceSubmissionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->format('D M Y')->sortable()->label('Submitted At')->searchable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->label('Submitted At')->searchable(),
                 Tables\Columns\TextColumn::make('invoice_date')->date()->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('vendor.VendorName')->label('Vendor')->searchable(),
                 Tables\Columns\TextColumn::make('invoice_number')->label('Invoice No.')->sortable()->searchable(),
